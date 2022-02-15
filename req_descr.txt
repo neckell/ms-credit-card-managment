@@ -1,0 +1,50 @@
+Se necesita cargar items con:
+
+ArmyTech 	(oct/20)	- ryzen 	Cuota 16/18: 	2625	SANTANDER
+
+Estado
+NombreTienda
+MesAñoCompra
+ItemComprado
+MontoTotal
+Banco
+Tarjeta
+
+GastoCuota
+	CuotaActiva
+	CuotasTotales
+GastoFijo
+GastoUnico
+
+
+Liquidacion
+	TotalLiquidado
+	MesLiquidado
+
+LiquidacionGasto
+	idLiquidacion
+	idGasto
+
+Purchase
+state
+store_name
+purchasing_date
+item_name
+total_amount
+bank
+card
+
+QuotaPurchase
+	active_quota
+	total_quotas
+FixedPurchase
+UniquePurchase
+
+
+Settlement
+	total
+	month
+
+PurchaseSettlement
+	id_purchase
+	id_settlement
