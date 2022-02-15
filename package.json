@@ -1,28 +1,16 @@
 {
   "name": "ms-credit-card-managment",
-  "version": "1.0.0",
-  "description": "Credit card project (MS) for managment of payments by periods",
-  "main": "index.js",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "test": "test"
+    "start": "nodemon ./bin/www"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/NicolasEckell/ms-credit-card-managment.git"
-  },
-  "keywords": [
-    "credit",
-    "cards",
-    "resume",
-    "payments"
-  ],
-  "author": "Nicolas Eckell",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/NicolasEckell/ms-credit-card-managment/issues"
-  },
-  "homepage": "https://github.com/NicolasEckell/ms-credit-card-managment#readme",
   "dependencies": {
-    "express": "^4.17.2"
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "morgan": "~1.9.1"
   }
 }
