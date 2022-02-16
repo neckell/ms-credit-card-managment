@@ -62,8 +62,12 @@ router.get("/", function (req, res, next) {
 
 router.post("/", function (req, res, next) {
 	console.log(req.body);
-	validateInput(req.body);
-	// console.log(req);
+	let errors = validateInput(req.body);
+	if (errors.length !== 0) {
+		res.status(400);
+		res.send(errors);
+	}
+	res.status(201);
 	res.send("ok");
 	// const query = `
 	// MATCH (movie:Movie {title:$favorite})<-[:ACTED_IN]-(actor)-[:ACTED_IN]->(rec:Movie)
@@ -91,18 +95,30 @@ router.post("/", function (req, res, next) {
 });
 
 const validateInput = (data) => {
-	isNotNullOrEmpty(data.store_name);
-	isNotNullOrEmpty(data.purchasing_date);
-	isNotNullOrEmpty(data.item_name);
-	isNotNullOrEmpty(data.total_amount);
-	isNotNullOrEmpty(data.bank);
-	isNotNullOrEmpty(data.card);
+	let arr = [];
+	arr.push(isNotNullOrEmpty(data.store_name));
+	arr.push(isNotNullOrEmpty(data.purchasing_date));
+	arr.push(isDate(data.purchasing_date));
+	arr.push(isNotNullOrEmpty(data.item_name));
+	arr.push(isNotNullOrEmpty(data.total_amount));
+	arr.push(isNumber(data.total_amount));
+	arr.push(isNotNullOrEmpty(data.bank));
+	arr.push(isNotNullOrEmpty(data.card));
+	arr = arr.filter((e) => e !== null);
+	return arr;
 };
 
-const isNotNullOrEmpty = (value) => {
-	value !== null && value !== undefined && value !== "";
-};
+const isNotNullOrEmpty = (value) =>
+	value !== null && value !== undefined && value !== ""
+		? null
+		: `The field ${value} it's mandatory`;
 
-const isNumber = (value) => typeof value === "number";
+const isNumber = (value) =>
+	typeof value === "number" ? null : `The field ${value} should be a number`;
+
+const isDate = (value) =>
+	typeof value === "string" && value.match(/\w{3}\/\d{2}/)
+		? null
+		: `The field ${value} should be a date like "dic/20"`;
 
 module.exports = router;
