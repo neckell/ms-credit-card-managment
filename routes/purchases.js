@@ -1,10 +1,11 @@
 var express = require("express");
 var router = express.Router();
 
-/* GET users listing. */
+/* GET purchases listing. */
 router.get("/", function (req, res, next) {
 	res.send([
 		{
+			id: "1",
 			state: "Activo",
 			store_name: "ArmyTech",
 			purchasing_date: "nov/20",
@@ -14,6 +15,7 @@ router.get("/", function (req, res, next) {
 			card: "Visa",
 		},
 		{
+			id: "2",
 			state: "Activo",
 			store_name: "ArmyTech2",
 			purchasing_date: "dic/20",
