@@ -1,64 +1,67 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
+const { MongoClient, ObjectId } = require("mongodb");
 
-const { MongoClient } = require("mongodb");
 const uri =
 	"mongodb+srv://card-managment-test:jR5CYm48XodiRknF@cluster0.pqwkz.mongodb.net/cm_test?retryWrites=true&w=majority";
-
 const client = new MongoClient(uri);
+const modelColumns = [
+	"state",
+	"store_name",
+	"purchasing_date",
+	"item_name",
+	"total_amount",
+	"bank",
+	"card",
+];
+const modelName = "Purchases";
 
-async function main() {
-	try {
-		// Connect to the MongoDB cluster
-		await client.connect();
+router.get("/", function (req, res, next) {
+	let response = { records: [] };
+	client.connect((err) => {
+		const collection = client.db("cm_test").collection(modelName);
+		const cursor = collection.find();
+		cursor.forEach((item) => {
+			response["records"].push(item);
+		});
+	});
 
-		// Make the appropriate DB calls
-		await listDatabases(client);
-	} catch (e) {
-		console.error(e);
-	} finally {
-		// Close the connection to the MongoDB cluster
-		await client.close();
-	}
-}
-
-main().catch(console.error);
-
-/**
- * Print the names of all available databases
- * @param {MongoClient} client A MongoClient that is connected to a cluster
- */
-async function listDatabases(client) {
-	databasesList = await client.db().admin().listDatabases();
-
-	console.log("Databases:");
-	databasesList.databases.forEach((db) => console.log(` - ${db.name}`));
-}
-
-/* GET purchases listing. */
-router.get("/", function (req, res, next) {});
+	res.status(200);
+	res.send(response);
+});
 
 router.post("/", function (req, res, next) {
-	// console.log(req.body);
 	let errors = validateInput(req.body);
 	if (errors.length !== 0) {
 		res.status(400);
 		res.send(errors);
 	}
+	let input = filterInput(req.body, modelColumns);
 
-	// const main = async () => {
 	client.connect((err) => {
-		console.log("asdas");
-		const collection = client.db("cm_test").collection("QuotaPurchase");
-		collection.insertOne(req.body).then(() => {
-			client.close();
-		});
+		const collection = client.db("cm_test").collection(modelName);
+		collection.insertOne(input).then((a) => {});
 	});
-	// };
-	// main();
 
 	res.status(201);
-	res.send("ok");
+	res.send("ok created");
+});
+
+router.delete("/:id", function (req, res, next) {
+	if (req.params.id === undefined || req.params.id === null) {
+		res.status(400);
+		res.send("Id was undefinded on path param for this URL");
+	}
+	client.connect((err) => {
+		const collection = client.db("cm_test").collection(modelName);
+
+		collection.deleteOne({ _id: ObjectId(req.params.id) }).then((e) => {
+			console.log(e);
+		});
+	});
+
+	res.status(204);
+	res.send("ok deleted");
 });
 
 const validateInput = (data) => {
@@ -72,6 +75,18 @@ const validateInput = (data) => {
 	arr.push(isNotNullOrEmpty(data.bank));
 	arr.push(isNotNullOrEmpty(data.card));
 	arr = arr.filter((e) => e !== null);
+	return arr;
+};
+
+const filterInput = (data, modelColumns) => {
+	let arr = {};
+	try {
+		modelColumns.map((column) => {
+			arr[column] = data[column];
+		});
+	} catch (exception) {
+		console.log(exception);
+	}
 	return arr;
 };
 
