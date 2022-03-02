@@ -52,7 +52,7 @@ router.post("/", async function (req, res, next) {
 			.collection(modelName)
 			.insertOne(input);
 
-		return MakeResponse(res, 201, data.insertedId);
+		return MakeResponse(res, 201, "Created itemId: " + data.insertedId);
 	} catch (err) {
 		return CatchExit(res, err);
 	}
@@ -69,7 +69,7 @@ router.delete("/:id", async function (req, res, next) {
 			.collection(modelName)
 			.deleteOne({ _id: ObjectId(req.params.id) });
 
-		return MakeResponse(res, 204, data);
+		return MakeResponse(res, 204, "Deleted items: " + data.deletedCount);
 	} catch (err) {
 		return CatchExit(res, err);
 	}
