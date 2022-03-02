@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { ObjectId } = require("mongodb");
 const mongoDriver = require("../app/DAL/MongoDriver");
 
 const modelColumns = [
@@ -18,6 +19,11 @@ const MakeResponse = (res, httpCode, data) => {
 	res.send(data);
 };
 
+const CatchExit = (res, err) => {
+	console.log(err);
+	return MakeResponse(res, 404, err);
+};
+
 router.get("/", async function (req, res, next) {
 	try {
 		let client = await mongoDriver.client();
@@ -28,43 +34,45 @@ router.get("/", async function (req, res, next) {
 			.toArray();
 		return MakeResponse(res, 200, data);
 	} catch (err) {
-		console.log(err);
-		return MakeResponse(res, 404, err);
+		return CatchExit(res, err);
 	}
 });
 
-router.post("/", function (req, res, next) {
-	let errors = validateInput(req.body);
-	if (errors.length !== 0) {
-		res.status(400);
-		res.send(errors);
-	}
-	let input = filterInput(req.body, modelColumns);
+router.post("/", async function (req, res, next) {
+	try {
+		let errors = validateInput(req.body);
+		if (errors.length !== 0) throw errors;
 
-	client.connect((err) => {
+		let input = filterInput(req.body, modelColumns);
+
 		let client = await mongoDriver.client();
-		const collection = client.db("cm_test").collection(modelName);
-		collection.insertOne(input);
-	});
+		let data = await client
+			.db("cm_test")
+			.collection(modelName)
+			.insertOne(input);
 
-	res.status(201);
-	res.send("ok created");
+		return MakeResponse(res, 201, data.insertedId);
+	} catch (err) {
+		return CatchExit(res, err);
+	}
 });
 
-router.delete("/:id", function (req, res, next) {
-	if (req.params.id === undefined || req.params.id === null) {
-		res.status(400);
-		res.send("Id was undefinded on path param for this URL");
-	}
-	client.connect((err) => {
-		const collection = client.db("cm_test").collection(modelName);
-		collection.deleteOne({ _id: ObjectId(req.params.id) }).then((e) => {
-			console.log(e);
-		});
-	});
+router.delete("/:id", async function (req, res, next) {
+	try {
+		console.log(req.params.id);
+		if (req.params.id === undefined || req.params.id === null)
+			throw "Id was undefinded on path param for this URL";
 
-	res.status(204);
-	res.send("ok deleted");
+		let client = await mongoDriver.client();
+		let data = await client
+			.db("cm_test")
+			.collection(modelName)
+			.deleteOne({ _id: ObjectId(req.params.id) });
+
+		return MakeResponse(res, 204, data);
+	} catch (err) {
+		return CatchExit(res, err);
+	}
 });
 
 const validateInput = (data) => {

@@ -1,10 +1,10 @@
-const { MongoClient, ObjectId } = require("mongodb");
+const { MongoClient } = require("mongodb");
 
 let _client = null;
 const uri =
 	"mongodb+srv://card-managment-test:jR5CYm48XodiRknF@cluster0.pqwkz.mongodb.net/cm_test?retryWrites=true&w=majority";
 
-connectToClientDB = async function () {
+const connectToClientDB = async function () {
 	if (_client !== null) return _client;
 	_client = await MongoClient.connect(uri, {
 		useNewUrlParser: true,
@@ -14,9 +14,9 @@ connectToClientDB = async function () {
 	return _client;
 };
 
-const client = async () => {
+const client = function () {
 	try {
-		return await connectToClientDB();
+		return connectToClientDB();
 	} catch (err) {
 		throw err;
 	}
