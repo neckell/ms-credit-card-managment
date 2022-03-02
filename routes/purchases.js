@@ -32,6 +32,7 @@ router.get("/", async function (req, res, next) {
 			.collection(modelName)
 			.find()
 			.toArray();
+
 		return MakeResponse(res, 200, data);
 	} catch (err) {
 		return CatchExit(res, err);
@@ -59,7 +60,6 @@ router.post("/", async function (req, res, next) {
 
 router.delete("/:id", async function (req, res, next) {
 	try {
-		console.log(req.params.id);
 		if (req.params.id === undefined || req.params.id === null)
 			throw "Id was undefinded on path param for this URL";
 
