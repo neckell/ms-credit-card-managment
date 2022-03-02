@@ -1,10 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { MongoClient, ObjectId } = require("mongodb");
+const mongoDriver = require("../app/DAL/MongoDriver");
 
-const uri =
-	"mongodb+srv://card-managment-test:jR5CYm48XodiRknF@cluster0.pqwkz.mongodb.net/cm_test?retryWrites=true&w=majority";
-const client = new MongoClient(uri);
 const modelColumns = [
 	"state",
 	"store_name",
@@ -16,18 +13,24 @@ const modelColumns = [
 ];
 const modelName = "Purchases";
 
-router.get("/", function (req, res, next) {
-	let response = { records: [] };
-	client.connect((err) => {
-		const collection = client.db("cm_test").collection(modelName);
-		const cursor = collection.find();
-		cursor.forEach((item) => {
-			response["records"].push(item);
-		});
-	});
+const MakeResponse = (res, httpCode, data) => {
+	res.status(httpCode);
+	res.send(data);
+};
 
-	res.status(200);
-	res.send(response);
+router.get("/", async function (req, res, next) {
+	try {
+		let client = await mongoDriver.client();
+		let data = await client
+			.db("cm_test")
+			.collection(modelName)
+			.find()
+			.toArray();
+		return MakeResponse(res, 200, data);
+	} catch (err) {
+		console.log(err);
+		return MakeResponse(res, 404, err);
+	}
 });
 
 router.post("/", function (req, res, next) {
@@ -39,8 +42,9 @@ router.post("/", function (req, res, next) {
 	let input = filterInput(req.body, modelColumns);
 
 	client.connect((err) => {
+		let client = await mongoDriver.client();
 		const collection = client.db("cm_test").collection(modelName);
-		collection.insertOne(input).then((a) => {});
+		collection.insertOne(input);
 	});
 
 	res.status(201);
@@ -54,7 +58,6 @@ router.delete("/:id", function (req, res, next) {
 	}
 	client.connect((err) => {
 		const collection = client.db("cm_test").collection(modelName);
-
 		collection.deleteOne({ _id: ObjectId(req.params.id) }).then((e) => {
 			console.log(e);
 		});
