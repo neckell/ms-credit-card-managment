@@ -4,10 +4,9 @@ const { ObjectId } = require("mongodb");
 const mongoDriver = require("../app/DAL/MongoDriver");
 
 const modelColumns = [
-	"state",
+	"item_name",
 	"store_name",
 	"purchasing_date",
-	"item_name",
 	"total_amount",
 	"bank",
 	"card",
@@ -41,7 +40,7 @@ router.get("/", async function (req, res, next) {
 
 router.post("/", async function (req, res, next) {
 	try {
-		let errors = validateInput(req.body);
+		let errors = validateInput(req.body, modelColumns);
 		if (errors.length !== 0) throw errors;
 
 		let input = filterInput(req.body, modelColumns);
@@ -75,16 +74,16 @@ router.delete("/:id", async function (req, res, next) {
 	}
 });
 
-const validateInput = (data) => {
+const validateInput = (data, modelColumns) => {
 	let arr = [];
-	arr.push(isNotNullOrEmpty(data.store_name));
-	arr.push(isNotNullOrEmpty(data.purchasing_date));
+	arr.push(isNotNullOrEmpty(data.item_name, "item_name"));
+	arr.push(isNotNullOrEmpty(data.store_name, "store_name"));
+	arr.push(isNotNullOrEmpty(data.purchasing_date, "purchasing_date"));
 	arr.push(isDate(data.purchasing_date));
-	arr.push(isNotNullOrEmpty(data.item_name));
-	arr.push(isNotNullOrEmpty(data.total_amount));
+	arr.push(isNotNullOrEmpty(data.total_amount, "total_amount"));
 	arr.push(isNumber(data.total_amount));
-	arr.push(isNotNullOrEmpty(data.bank));
-	arr.push(isNotNullOrEmpty(data.card));
+	arr.push(isNotNullOrEmpty(data.bank, "bank"));
+	arr.push(isNotNullOrEmpty(data.card, "card"));
 	arr = arr.filter((e) => e !== null);
 	return arr;
 };
@@ -101,10 +100,10 @@ const filterInput = (data, modelColumns) => {
 	return arr;
 };
 
-const isNotNullOrEmpty = (value) =>
+const isNotNullOrEmpty = (value, field_name) =>
 	value !== null && value !== undefined && value !== ""
 		? null
-		: `The field ${value} it's mandatory`;
+		: `The field ${field_name} it's mandatory`;
 
 const isNumber = (value) =>
 	typeof value === "number" ? null : `The field ${value} should be a number`;
