@@ -4,12 +4,12 @@ const { ObjectId } = require("mongodb");
 const mongoDriver = require("../app/DAL/MongoDriver");
 
 const modelColumns = {
-	item_name: "Item name",
-	store_name: "Store name",
-	purchasing_date: "Purchasing Date",
-	total_amount: "Total Amount",
-	bank: "Bank",
-	card: "Card",
+	item_name: "Nombre de la compra",
+	store_name: "Nombre del comercio",
+	purchasing_date: "Fecha de compra",
+	total_amount: "Precio final",
+	bank: "Banco emisor",
+	card: "Tarjeta adquirente",
 };
 const modelName = "Purchases";
 
