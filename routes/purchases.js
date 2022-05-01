@@ -26,17 +26,21 @@ const CatchExit = (res, err) => {
 router.get("/", async function (req, res, next) {
 	try {
 		let client = await mongoDriver.client();
-		let data = await client
+		let purchases = await client
 			.db("cm_test")
 			.collection(modelName)
 			.find()
 			.toArray();
 
 		let total = 0;
-		for (var value of Object.values(data)) {
+		for (var value of Object.values(purchases)) {
 			total += value["total_amount"];
 		}
-		data["total"] = total;
+
+		const data = {
+			data: purchases,
+			total: total,
+		};
 
 		return MakeResponse(res, 200, data);
 	} catch (err) {
