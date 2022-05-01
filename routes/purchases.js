@@ -32,6 +32,12 @@ router.get("/", async function (req, res, next) {
 			.find()
 			.toArray();
 
+		let total = 0;
+		for (var value of Object.values(data)) {
+			total += value["total_amount"];
+		}
+		data["total"] = total;
+
 		return MakeResponse(res, 200, data);
 	} catch (err) {
 		return CatchExit(res, err);
@@ -73,6 +79,8 @@ router.delete("/:id", async function (req, res, next) {
 		return CatchExit(res, err);
 	}
 });
+
+const sum = (data) => {};
 
 const validateInput = (data, modelColumns) => {
 	let arr = [];
