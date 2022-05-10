@@ -1,6 +1,6 @@
 # ms-credit-card-managment
 
-This project was built for testing purposes. This is the backend of the apptication, build on express.js framework.
+This project was built for testing purposes. This is the backend of the application, build on express.js framework.
 
 ## The problem to resolve: monthly payments
 
