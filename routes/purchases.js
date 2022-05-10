@@ -3,7 +3,10 @@ const router = express.Router();
 const { ObjectId } = require("mongodb");
 const mongoDriver = require("../app/DAL/MongoDriver");
 
-let db = process.env.db_collection || "cm_test";
+let db =
+	process.env.db_collection || process.env.NODE_ENV === "Production"
+		? "cm_stagging"
+		: "cm_test";
 
 const modelColumns = {
 	item_name: "Nombre de la compra",
