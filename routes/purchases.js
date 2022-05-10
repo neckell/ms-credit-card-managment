@@ -3,6 +3,8 @@ const router = express.Router();
 const { ObjectId } = require("mongodb");
 const mongoDriver = require("../app/DAL/MongoDriver");
 
+let db = process.env.db_collection || "cm_test";
+
 const modelColumns = {
 	item_name: "Nombre de la compra",
 	store_name: "Nombre del comercio",
@@ -27,7 +29,7 @@ router.get("/", async function (req, res, next) {
 	try {
 		let client = await mongoDriver.client();
 		let purchases = await client
-			.db("cm_test")
+			.db(db)
 			.collection(modelName)
 			.find()
 			.toArray();
@@ -56,10 +58,7 @@ router.post("/", async function (req, res, next) {
 		let input = filterInput(req.body, modelColumns);
 
 		let client = await mongoDriver.client();
-		let data = await client
-			.db("cm_test")
-			.collection(modelName)
-			.insertOne(input);
+		let data = await client.db(db).collection(modelName).insertOne(input);
 
 		return MakeResponse(res, 201, "Created itemId: " + data.insertedId);
 	} catch (err) {
@@ -74,7 +73,7 @@ router.delete("/:id", async function (req, res, next) {
 
 		let client = await mongoDriver.client();
 		let data = await client
-			.db("cm_test")
+			.db(db)
 			.collection(modelName)
 			.deleteOne({ _id: ObjectId(req.params.id) });
 
@@ -83,8 +82,6 @@ router.delete("/:id", async function (req, res, next) {
 		return CatchExit(res, err);
 	}
 });
-
-const sum = (data) => {};
 
 const validateInput = (data, modelColumns) => {
 	let arr = [];
