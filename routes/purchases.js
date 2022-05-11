@@ -16,7 +16,6 @@ const modelColumns = {
 const modelName = "Purchases";
 
 const MakeResponse = (res, httpCode, data) => {
-	console.log(process.env);
 	res.status(httpCode);
 	res.send(data);
 };

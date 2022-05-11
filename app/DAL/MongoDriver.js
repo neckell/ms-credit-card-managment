@@ -1,8 +1,10 @@
 const { MongoClient } = require("mongodb");
 
 let _client = null;
-let uri = process.env.db_uri;
-let db = process.env.db_collection;
+let uri =
+	process.env.db_uri ||
+	"mongodb+srv://card-managment-test:jR5CYm48XodiRknF@cluster0.pqwkz.mongodb.net/";
+let db = process.env.db_collection || "cm_test";
 
 const url = uri + db + "?retryWrites=true&w=majority";
 
@@ -17,6 +19,7 @@ const connectToClientDB = async function () {
 };
 
 const client = function () {
+	console.log(uri, db);
 	try {
 		return connectToClientDB();
 	} catch (err) {
