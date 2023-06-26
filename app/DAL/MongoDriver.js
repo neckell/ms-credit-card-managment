@@ -1,16 +1,14 @@
 const { MongoClient } = require("mongodb");
 
 let _client = null;
-let uri =
-	process.env.db_uri ||
-	"mongodb+srv://card-managment-test:jR5CYm48XodiRknF@cluster0.pqwkz.mongodb.net/";
-let db = process.env.db_collection || "cm_test";
-
-const url = uri + db + "?retryWrites=true&w=majority";
+const URL =
+	process.env.MONGO_URL +
+	process.env.MONGO_DB +
+	"?retryWrites=true&w=majority";
 
 const connectToClientDB = async function () {
 	if (_client !== null) return _client;
-	_client = await MongoClient.connect(url, {
+	_client = await MongoClient.connect(URL, {
 		useNewUrlParser: true,
 	}).catch((err) => {
 		throw err;
@@ -19,7 +17,6 @@ const connectToClientDB = async function () {
 };
 
 const client = function () {
-	console.log(uri, db);
 	try {
 		return connectToClientDB();
 	} catch (err) {
